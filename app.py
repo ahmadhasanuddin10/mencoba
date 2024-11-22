@@ -1,26 +1,21 @@
 import streamlit as st
 import pandas as pd
-from prediction import load_model, predict_status
+from prediction import predict
 
-# Load model and encoders
-model, encoders = load_model()
-
-# Streamlit UI
+# Upload CSV
 st.title("Student Dropout Prediction Dashboard")
+uploaded_file = st.file_uploader("Upload your dataset", type="csv")
 
-# Upload CSV file
-uploaded_file = st.file_uploader("Upload your CSV file", type=["csv"])
-
-if uploaded_file is not None:
-    # Read the uploaded file
-    data = pd.read_csv(uploaded_file, delimiter=';')
-    st.write("Uploaded Data:", data.head())
-
-    # Preprocess and predict
+if uploaded_file:
+    data = pd.read_csv(uploaded_file)
+    st.write("Uploaded Data:")
+    st.dataframe(data)
+    
+    # Prediction
     try:
-        predictions = predict_status(data, model, encoders)
-        data['Predicted_Status'] = predictions
-        st.success("Prediction Successful!")
-        st.write(data)
+        predictions = predict(data)
+        data["Predictions"] = predictions
+        st.write("Predicted Results:")
+        st.dataframe(data)
     except Exception as e:
         st.error(f"Error during prediction: {e}")
