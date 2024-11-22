@@ -1,21 +1,18 @@
 import pickle
+from preprocess import preprocess_data
 
 def load_model():
-    """
-    Load the trained model and encoders from file.
-    :return: Tuple (model, encoders)
-    """
+    """Load the trained model and encoders from files."""
     with open("model.pkl", "rb") as file:
-        data = pickle.load(file)
-    return data["model"], data["encoders"]
+        model = pickle.load(file)
+    with open("encoders.pkl", "rb") as file:
+        encoders = pickle.load(file)
+    return model, encoders
 
-def predict_status(input_data, model, encoders):
-    """
-    Predict dropout status.
-    :param input_data: Pandas DataFrame containing preprocessed data.
-    :param model: Trained machine learning model.
-    :return: Predictions.
-    """
-    preprocessed_data = preprocess_data(input_data, encoders)
-    predictions = model.predict(preprocessed_data)
+def predict(data):
+    """Make predictions on input data."""
+    model, encoders = load_model()
+    processed_data = preprocess_data(data, encoders)
+    predictions = model.predict(processed_data)
     return predictions
+
